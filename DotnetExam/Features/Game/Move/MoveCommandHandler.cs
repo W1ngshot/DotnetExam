@@ -34,6 +34,6 @@ public class MoveCommandHandler(IExamDbContext dbContext) : ICommandHandler<Move
         dbContext.Games.Update(game);
         await dbContext.SaveEntitiesAsync();
 
-        return new MoveResponse(game.Id, request.X, request.Y, player.Mark, game.State);
+        return new MoveResponse(game.Id, game.State, game.NextTurn());
     }
 }

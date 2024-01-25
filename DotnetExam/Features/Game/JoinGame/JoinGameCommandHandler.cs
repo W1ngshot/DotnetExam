@@ -4,11 +4,13 @@ using DotnetExam.Infrastructure.Exceptions;
 using DotnetExam.Infrastructure.Mediator.Command;
 using DotnetExam.Models.Enums;
 using DotnetExam.Models.Main;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotnetExam.Features.Game.JoinGame;
 
-public class JoinGameCommandHandler(IExamDbContext dbContext) : ICommandHandler<JoinGameCommand, JoinGameResponse>
+public class JoinGameCommandHandler(IExamDbContext dbContext, UserManager<AppUser> userManager)
+    : ICommandHandler<JoinGameCommand, JoinGameResponse>
 {
     public async Task<JoinGameResponse> Handle(JoinGameCommand request, CancellationToken cancellationToken)
     {
@@ -24,7 +26,7 @@ public class JoinGameCommandHandler(IExamDbContext dbContext) : ICommandHandler<
 
         if (request.JoinMode is JoinMode.AsViewer)
             return new JoinGameResponse(game.Host.Id, game.Host.User.UserName!, game.Opponent?.UserId,
-                game.Opponent?.User.UserName, game.State, game.Board, null);
+                game.Opponent?.User.UserName, game.State, game.Board, null, game.NextTurn());
 
         if (game.State is not GameState.NotStarted || game.Opponent is not null)
         {
@@ -43,7 +45,8 @@ public class JoinGameCommandHandler(IExamDbContext dbContext) : ICommandHandler<
 
         await dbContext.SaveEntitiesAsync();
 
+        var opponentUser = await userManager.FindByIdAsync(opponent.UserId.ToString());
         return new JoinGameResponse(game.Host.Id, game.Host.User.UserName!, game.Opponent?.UserId,
-            game.Opponent?.User.UserName, game.State, game.Board, opponent.Mark);
+            opponentUser?.UserName, game.State, game.Board, opponent.Mark, game.NextTurn());
     }
 }

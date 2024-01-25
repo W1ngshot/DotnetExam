@@ -38,6 +38,14 @@ public class Game : BaseEntity
         UpdateState();
     }
 
+    public Mark NextTurn()
+    {
+        var crossesCount = Board.Count(cell => cell.Mark is Mark.Cross);
+        var noughtsCount = Board.Count(cell => cell.Mark is Mark.Nought);
+
+        return crossesCount == noughtsCount ? Mark.Cross : Mark.Nought;
+    }
+    
     private void UpdateState()
     {
         if (CheckWinner(out var mark))
@@ -57,11 +65,7 @@ public class Game : BaseEntity
 
     public bool IsPlayerTurn(Mark mark)
     {
-        var crossesCount = Board.Count(cell => cell.Mark is Mark.Cross);
-        var noughtsCount = Board.Count(cell => cell.Mark is Mark.Nought);
-
-        var nextMark = crossesCount == noughtsCount ? Mark.Cross : Mark.Nought;
-        return nextMark == mark;
+        return NextTurn() == mark;
     }
 
     private bool CheckWinner(out Mark mark)

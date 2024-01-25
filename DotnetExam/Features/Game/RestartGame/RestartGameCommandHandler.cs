@@ -46,6 +46,6 @@ public class RestartGameCommandHandler(
         await dbContext.SaveEntitiesAsync();
 
         return new RestartGameResponse(game.Id, game.Host.Id, game.Host.User.UserName!, game.Opponent?.UserId,
-            game.Opponent?.User.UserName, game.State, game.Board, game.Host.Mark);
+            game.Opponent?.User.UserName, game.State, game.Board, game.Host.Mark, game.NextTurn());
     }
 }

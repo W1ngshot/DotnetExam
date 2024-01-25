@@ -36,6 +36,6 @@ public class CreateGameCommandHandler(
         dbContext.Games.Add(game);
         await dbContext.SaveEntitiesAsync();
 
-        return new CreateGameResponse(game.Id, game.Host.Mark);
+        return new CreateGameResponse(game.Id, game.Host.Mark, game.NextTurn());
     }
 }

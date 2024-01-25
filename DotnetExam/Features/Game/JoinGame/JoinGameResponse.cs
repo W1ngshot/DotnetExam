@@ -10,4 +10,5 @@ public record JoinGameResponse(
     string? OpponentName,
     GameState State,
     Board Board,
-    Mark? Mark); 
+    Mark? Mark,
+    Mark NextTurn); 

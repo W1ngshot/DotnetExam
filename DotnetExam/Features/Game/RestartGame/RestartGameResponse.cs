@@ -11,4 +11,5 @@ public record RestartGameResponse(
     string? OpponentName,
     GameState State,
     Board Board,
-    Mark? HostMark); 
+    Mark? HostMark,
+    Mark NextTurn); 
