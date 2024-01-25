@@ -4,14 +4,13 @@ using DotnetExam.Infrastructure.Exceptions;
 using DotnetExam.Infrastructure.Mediator.Command;
 using DotnetExam.Models.Enums;
 using DotnetExam.Models.Main;
-using DotnetExam.Models.Responses;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotnetExam.Features.Game.JoinGame;
 
-public class JoinGameCommandHandler(IExamDbContext dbContext) : ICommandHandler<JoinGameCommand, SuccessResponse>
+public class JoinGameCommandHandler(IExamDbContext dbContext) : ICommandHandler<JoinGameCommand, JoinGameResponse>
 {
-    public async Task<SuccessResponse> Handle(JoinGameCommand request, CancellationToken cancellationToken)
+    public async Task<JoinGameResponse> Handle(JoinGameCommand request, CancellationToken cancellationToken)
     {
         if (await dbContext.Games.IsPlayingAsync(request.UserId, cancellationToken))
         {
@@ -19,10 +18,15 @@ public class JoinGameCommandHandler(IExamDbContext dbContext) : ICommandHandler<
         }
 
         var game = await dbContext.Games
-            .Include(game => game.Host)
+            .Include(game => game.Host.User)
+            .Include(game => game.Opponent!.User)
             .FirstOrNotFoundAsync(game => game.Id == request.GameId, cancellationToken);
 
-        if (game.State is not GameState.NotStarted && game.Opponent is not null)
+        if (request.JoinMode is JoinMode.AsViewer)
+            return new JoinGameResponse(game.Host.Id, game.Host.User.UserName!, game.Opponent?.UserId,
+                game.Opponent?.User.UserName, game.State, game.Board, null);
+
+        if (game.State is not GameState.NotStarted || game.Opponent is not null)
         {
             throw new DomainException("Already started");
         }
@@ -39,6 +43,7 @@ public class JoinGameCommandHandler(IExamDbContext dbContext) : ICommandHandler<
 
         await dbContext.SaveEntitiesAsync();
 
-        return new SuccessResponse();
+        return new JoinGameResponse(game.Host.Id, game.Host.User.UserName!, game.Opponent?.UserId,
+            game.Opponent?.User.UserName, game.State, game.Board, opponent.Mark);
     }
 }

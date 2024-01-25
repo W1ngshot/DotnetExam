@@ -67,7 +67,12 @@ public class Board : IEnumerable<Cell>
     {
         Cells[x, y].Mark = mark;
     }
-    
+
+    public override string ToString()
+    {
+        return base.ToString();
+    }
+
     public IEnumerator<Cell> GetEnumerator()
     {
         return Cells.OfType<Cell>().GetEnumerator();

@@ -6,14 +6,14 @@ namespace DotnetExam.Features.Game.JoinGame;
 
 public class JoinGameEndpoint : IEndpoint
 {
-    private record JoinGameDto(Guid GameId);
+    private record JoinGameDto(Guid GameId, JoinMode JoinMode);
     
     public void Map(IEndpointRouteBuilder endpoints)
     {
         endpoints.MapPost("/join", async (JoinGameDto dto, IMediator mediator, IUserService userService) =>
                 Results.Ok(await mediator.Send(
                     new JoinGameCommand(
-                        userService.GetUserIdOrThrow(), dto.GameId))))
+                        userService.GetUserIdOrThrow(), dto.GameId, dto.JoinMode))))
             .RequireAuthorization();
     }
 }

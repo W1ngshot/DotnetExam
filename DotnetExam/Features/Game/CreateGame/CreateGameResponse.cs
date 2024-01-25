@@ -1,3 +1,5 @@
-﻿namespace DotnetExam.Features.Game.CreateGame;
+﻿using DotnetExam.Models.Enums;
 
-public record CreateGameResponse(Guid GameId);
+namespace DotnetExam.Features.Game.CreateGame;
+
+public record CreateGameResponse(Guid GameId, Mark HostMark);

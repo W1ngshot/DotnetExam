@@ -1,6 +1,7 @@
 ﻿using DotnetExam.Features.Game.CreateGame;
 using DotnetExam.Features.Game.GetGames;
 using DotnetExam.Features.Game.JoinGame;
+using DotnetExam.Features.Game.Move;
 using DotnetExam.Features.Game.RestartGame;
 using DotnetExam.Infrastructure.Routing;
 
@@ -15,6 +16,7 @@ public class GameEndpointRoot : IEndpointRoot
             .AddEndpoint<CreateGameEndpoint>()
             .AddEndpoint<JoinGameEndpoint>()
             .AddEndpoint<GetGamesEndpoint>()
-            .AddEndpoint<RestartGameEndpoint>();
+            .AddEndpoint<RestartGameEndpoint>()
+            .AddEndpoint<MoveEndpoint>();
     }
 }
