@@ -12,12 +12,16 @@ public class GetGamesQueryHandler(IExamDbContext dbContext) : IQueryHandler<GetG
         return new GetGamesResponse(
             await dbContext.Games
                 .Include(game => game.Host.User)
+                .Include(game => game.Opponent!.User)
                 .OrderByDescending(game => game.Opponent == null)
                 .ThenByDescending(game => game.CreatedAt)
                 .Skip(request.Skip)
                 .Take(request.Count)
                 .Select(game => new GameResponse(game.Id, game.CreatedAt, game.State,
-                    new PlayerInfo(game.Host.UserId, game.Host.User.UserName!, 0, game.Host.Mark)))
+                    new PlayerInfo(game.Host.UserId, game.Host.User.UserName!, 0, game.Host.Mark),
+                    game.Opponent == null
+                        ? null
+                        : new PlayerInfo(game.Opponent.Id, game.Opponent.User.UserName!, 0, game.Opponent.Mark)))
                 .ToListAsync(cancellationToken));
     }
 }
