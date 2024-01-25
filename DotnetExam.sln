@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetExam", "DotnetExam\DotnetExam.csproj", "{1E6C2E88-CDCC-4056-8BEF-983F1C25E27B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Environment", "Environment", "{E565A017-F03A-49B0-B8F4-E86AF554225C}"
+	ProjectSection(SolutionItems) = preProject
+		.env = .env
+		docker-compose.yaml = docker-compose.yaml
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1E6C2E88-CDCC-4056-8BEF-983F1C25E27B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E6C2E88-CDCC-4056-8BEF-983F1C25E27B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E6C2E88-CDCC-4056-8BEF-983F1C25E27B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E6C2E88-CDCC-4056-8BEF-983F1C25E27B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
