@@ -2,16 +2,19 @@
 using DotnetExam.Infrastructure;
 using DotnetExam.Infrastructure.Exceptions;
 using DotnetExam.Infrastructure.Mediator.Command;
+using DotnetExam.Models;
 using DotnetExam.Models.Enums;
 using DotnetExam.Models.Main;
 using DotnetExam.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
 namespace DotnetExam.Features.Game.CreateGame;
 
 public class CreateGameCommandHandler(
     IExamDbContext dbContext,
     IDateTimeProvider dateTimeProvider,
-    IRandomService randomService)
+    IRandomService randomService,
+    UserManager<AppUser> userManager)
     : ICommandHandler<CreateGameCommand, CreateGameResponse>
 {
     public async Task<CreateGameResponse> Handle(CreateGameCommand request, CancellationToken cancellationToken)
@@ -36,6 +39,8 @@ public class CreateGameCommandHandler(
         dbContext.Games.Add(game);
         await dbContext.SaveEntitiesAsync();
 
-        return new CreateGameResponse(game.Id, game.Host.Mark, game.NextTurn());
+        var host = await userManager.FindByIdAsync(request.UserId.ToString())
+                   ?? throw new NotFoundException<AppUser>();
+        return new CreateGameResponse(game.Id, new PlayerInfo(host.Id, host.UserName!, 0, game.Host.Mark));
     }
 }

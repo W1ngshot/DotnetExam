@@ -1,5 +1,3 @@
-﻿using DotnetExam.Models.Enums;
+﻿namespace DotnetExam.Features.Game.Move;
 
-namespace DotnetExam.Features.Game.Move;
-
-public record MoveResponse(Guid GameId, GameState State, Mark NextTurn);
+public record MoveResponse(Guid GameId, string[] Board, Guid CurrentTurnId, string IdempotenceKey);

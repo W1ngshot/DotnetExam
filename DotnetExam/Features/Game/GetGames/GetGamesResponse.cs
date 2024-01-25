@@ -1,5 +1,8 @@
-﻿namespace DotnetExam.Features.Game.GetGames;
+﻿using DotnetExam.Models;
+using DotnetExam.Models.Enums;
 
-public record GameResponse(Guid GameId, DateTimeOffset CreatedAt, string HostName);
+namespace DotnetExam.Features.Game.GetGames;
+
+public record GameResponse(Guid GameId, DateTimeOffset CreatedAt, GameState State, PlayerInfo Host);
 
 public record GetGamesResponse(List<GameResponse> Games);

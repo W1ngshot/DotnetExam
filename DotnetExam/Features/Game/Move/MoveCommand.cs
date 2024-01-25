@@ -2,4 +2,4 @@
 
 namespace DotnetExam.Features.Game.Move;
 
-public record MoveCommand(Guid UserId, int X, int Y) : ICommand<MoveResponse>;
+public record MoveCommand(Guid UserId, int X, int Y, string IdempotenceKey) : ICommand<MoveResponse>;

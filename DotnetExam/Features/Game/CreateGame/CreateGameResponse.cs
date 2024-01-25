@@ -1,5 +1,5 @@
-﻿using DotnetExam.Models.Enums;
+﻿using DotnetExam.Models;
 
 namespace DotnetExam.Features.Game.CreateGame;
 
-public record CreateGameResponse(Guid GameId, Mark HostMark, Mark NextTurn);
+public record CreateGameResponse(Guid GameId, PlayerInfo Host);

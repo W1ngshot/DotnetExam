@@ -2,22 +2,29 @@
 using DotnetExam.Infrastructure;
 using DotnetExam.Infrastructure.Exceptions;
 using DotnetExam.Infrastructure.Mediator.Command;
+using DotnetExam.Models;
 using DotnetExam.Models.Enums;
+using DotnetExam.Models.Events;
 using DotnetExam.Models.Main;
 using DotnetExam.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
 namespace DotnetExam.Features.Game.RestartGame;
 
 public class RestartGameCommandHandler(
     IExamDbContext dbContext,
     IDateTimeProvider dateTimeProvider,
-    IRandomService randomService) 
+    IRandomService randomService,
+    UserManager<AppUser> userManager) 
     : ICommandHandler<RestartGameCommand, RestartGameResponse>
 {
     public async Task<RestartGameResponse> Handle(RestartGameCommand request, CancellationToken cancellationToken)
     {
+        var opponent = await dbContext.Players
+            .FirstOrNotFoundAsync(player => player.Id == request.OpponentId, cancellationToken);
+        
         if (await dbContext.Games.IsPlayingAsync(request.HostId, cancellationToken)
-            || await dbContext.Games.IsPlayingAsync(request.OpponentId, cancellationToken))
+            || await dbContext.Games.IsPlayingAsync(opponent.UserId, cancellationToken))
         {
             throw new DomainException("Already playing");
         }
@@ -34,18 +41,24 @@ public class RestartGameCommandHandler(
             CreatedAt = dateTimeProvider.UtcNow
         };
         
-        var opponent = new Player
+        var opponentPlayer = new Player
         {
-            UserId = request.OpponentId,
+            UserId = opponent.UserId,
             Mark = game.Host.Mark is Mark.Cross ? Mark.Nought : Mark.Cross
         };
-        dbContext.Players.Add(opponent);
-        game.OpponentId = opponent.Id;
+        dbContext.Players.Add(opponentPlayer);
+        game.OpponentId = opponentPlayer.Id;
 
         dbContext.Games.Add(game);
         await dbContext.SaveEntitiesAsync();
 
-        return new RestartGameResponse(game.Id, game.Host.Id, game.Host.User.UserName!, game.Opponent?.UserId,
-            game.Opponent?.User.UserName, game.State, game.Board, game.Host.Mark, game.NextTurn());
+        var hostUser = await userManager.FindByIdAsync(game.Host.UserId.ToString());
+        var opponentUser = await userManager.FindByIdAsync(opponentPlayer.UserId.ToString());
+        
+        var hostInfo = new PlayerInfo(game.Host.Id, hostUser!.UserName!, 0, game.Host.Mark);
+        var opponentInfo = new PlayerInfo(game.Opponent!.Id, opponentUser!.UserName!, 0, game.Opponent.Mark);
+        var gameStartEvent = new GameStartEvent(game.Id, hostInfo, opponentInfo);
+        
+        return new RestartGameResponse(game.Id, hostInfo, opponentInfo, game.Board.ToStringArray());
     }
 }

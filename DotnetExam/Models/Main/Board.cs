@@ -7,7 +7,7 @@ public class Board : IEnumerable<Cell>
 {
     public readonly int Size = 3;
     private Cell[,] Cells { get; }
-
+    
     public Board()
     {
         Cells = new Cell[Size, Size];
@@ -73,6 +73,32 @@ public class Board : IEnumerable<Cell>
         return base.ToString();
     }
 
+    public string[] ToStringArray()
+    {
+        var list = new List<string>();
+        for (var x = 0; x < Size; x++)
+        {
+            for (var y = 0; y < Size; y++)
+            {
+                switch (Cells[x, y].Mark)
+                {
+                    case Mark.Cross:
+                        list.Add("X");
+                        break;
+                    case Mark.Nought:
+                        list.Add("O");
+                        break;
+                    case null:
+                        list.Add("_");
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+        return list.ToArray();
+    }
+    
     public IEnumerator<Cell> GetEnumerator()
     {
         return Cells.OfType<Cell>().GetEnumerator();

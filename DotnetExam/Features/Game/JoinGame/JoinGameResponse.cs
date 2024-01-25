@@ -1,14 +1,11 @@
-﻿using DotnetExam.Models.Enums;
-using DotnetExam.Models.Main;
+﻿using DotnetExam.Models;
+using DotnetExam.Models.Enums;
 
 namespace DotnetExam.Features.Game.JoinGame;
 
 public record JoinGameResponse(
-    Guid HostId,
-    string HostName,
-    Guid? OpponentId,
-    string? OpponentName,
-    GameState State,
-    Board Board,
-    Mark? Mark,
-    Mark NextTurn); 
+    Guid GameId,
+    PlayerInfo Host,
+    PlayerInfo? Opponent,
+    string[] Board,
+    Mark CurrentTurn); 

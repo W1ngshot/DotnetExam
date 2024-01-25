@@ -1,6 +1,7 @@
 ﻿using DotnetExam.Database.Postgres.Interfaces;
 using DotnetExam.Infrastructure.Mediator.Command;
 using DotnetExam.Models.Enums;
+using DotnetExam.Models.Events;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotnetExam.Features.Game.Disconnect;
@@ -25,7 +26,8 @@ public class DisconnectCommandHandler(IExamDbContext dbContext) : ICommandHandle
         {
             game.State = GameState.Draw;
             await dbContext.SaveEntitiesAsync();
-
+            //TODO
+            var gameOverEvent = CreateGameOverEvent(game, null);
             return new DisconnectResponse(false, null, game.State, game.Id);
         }
 
@@ -34,6 +36,14 @@ public class DisconnectCommandHandler(IExamDbContext dbContext) : ICommandHandle
 
         await dbContext.SaveEntitiesAsync();
 
+        //TODO
+        var gameOverEvent1 = CreateGameOverEvent(game, winner.UserId);
         return new DisconnectResponse(true, winner.UserId, game.State, game.Id);
     }
+
+    private GameOverEvent CreateGameOverEvent(Models.Main.Game game, Guid? winnerId)
+    {
+        return new GameOverEvent(game.Id, game.Board.ToStringArray(), winnerId, game.State);
+    }
+
 }
