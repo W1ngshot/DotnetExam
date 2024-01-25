@@ -15,20 +15,21 @@ public class RestartGameCommandHandler(
     IExamDbContext dbContext,
     IDateTimeProvider dateTimeProvider,
     IRandomService randomService,
-    UserManager<AppUser> userManager) 
+    UserManager<AppUser> userManager,
+    IEventSenderService eventSenderService)
     : ICommandHandler<RestartGameCommand, RestartGameResponse>
 {
     public async Task<RestartGameResponse> Handle(RestartGameCommand request, CancellationToken cancellationToken)
     {
         var opponent = await dbContext.Players
             .FirstOrNotFoundAsync(player => player.Id == request.OpponentId, cancellationToken);
-        
+
         if (await dbContext.Games.IsPlayingAsync(request.HostId, cancellationToken)
             || await dbContext.Games.IsPlayingAsync(opponent.UserId, cancellationToken))
         {
             throw new DomainException("Already playing");
         }
-        
+
         var game = new Models.Main.Game
         {
             Host = new Player
@@ -40,7 +41,7 @@ public class RestartGameCommandHandler(
             State = GameState.Started,
             CreatedAt = dateTimeProvider.UtcNow
         };
-        
+
         var opponentPlayer = new Player
         {
             UserId = opponent.UserId,
@@ -54,11 +55,13 @@ public class RestartGameCommandHandler(
 
         var hostUser = await userManager.FindByIdAsync(game.Host.UserId.ToString());
         var opponentUser = await userManager.FindByIdAsync(opponentPlayer.UserId.ToString());
-        
+
         var hostInfo = new PlayerInfo(game.Host.Id, hostUser!.UserName!, 0, game.Host.Mark);
         var opponentInfo = new PlayerInfo(game.Opponent!.Id, opponentUser!.UserName!, 0, game.Opponent.Mark);
-        var gameStartEvent = new GameStartEvent(game.Id, hostInfo, opponentInfo);
-        
+
+        await eventSenderService.SendGameRestartEvent(
+            new GameRestartEvent(request.OldGameId, game.Id, hostInfo, opponentInfo));
+
         return new RestartGameResponse(game.Id, hostInfo, opponentInfo, game.Board.ToStringArray());
     }
 }

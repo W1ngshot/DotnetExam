@@ -11,6 +11,7 @@ public class GetGamesEndpoint : IEndpoint
     {
         endpoints.MapGet("/", async (int skip, int count, IMediator mediator) =>
             Results.Ok(await mediator.Send(
-                new GetGamesQuery(skip, count))));
+                new GetGamesQuery(skip, count))))
+            .RequireAuthorization();
     }
 }

@@ -6,12 +6,16 @@ using DotnetExam.Models;
 using DotnetExam.Models.Enums;
 using DotnetExam.Models.Events;
 using DotnetExam.Models.Main;
+using DotnetExam.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotnetExam.Features.Game.JoinGame;
 
-public class JoinGameCommandHandler(IExamDbContext dbContext, UserManager<AppUser> userManager)
+public class JoinGameCommandHandler(
+    IExamDbContext dbContext,
+    UserManager<AppUser> userManager,
+    IEventSenderService eventSenderService)
     : ICommandHandler<JoinGameCommand, JoinGameResponse>
 {
     public async Task<JoinGameResponse> Handle(JoinGameCommand request, CancellationToken cancellationToken)
@@ -41,7 +45,7 @@ public class JoinGameCommandHandler(IExamDbContext dbContext, UserManager<AppUse
             UserId = request.UserId,
             Mark = game.Host.Mark is Mark.Cross ? Mark.Nought : Mark.Cross
         };
-        
+
         dbContext.Players.Add(opponent);
         game.OpponentId = opponent.Id;
         game.State = GameState.Started;
@@ -49,10 +53,10 @@ public class JoinGameCommandHandler(IExamDbContext dbContext, UserManager<AppUse
         await dbContext.SaveEntitiesAsync();
 
         var opponentUser = await userManager.FindByIdAsync(opponent.UserId.ToString());
-        
+
         var hostInfo = new PlayerInfo(game.Host.Id, game.Host.User.UserName!, 0, game.Host.Mark);
         var opponentInfo = new PlayerInfo(game.Opponent!.Id, opponentUser!.UserName!, 0, game.Opponent.Mark);
-        var gameStartEvent = new GameStartEvent(game.Id, hostInfo, opponentInfo);
+        await eventSenderService.SendGameStartEvent(new GameStartEvent(game.Id, hostInfo, opponentInfo));
 
         return new JoinGameResponse(game.Id, hostInfo, opponentInfo, game.Board.ToStringArray(), game.NextTurn());
     }
@@ -60,12 +64,12 @@ public class JoinGameCommandHandler(IExamDbContext dbContext, UserManager<AppUse
     private async Task<JoinGameResponse> JoinAsViewer(Models.Main.Game game)
     {
         var hostInfo = new PlayerInfo(game.Host.Id, game.Host.User.UserName!, 0, game.Host.Mark);
-        
+
         if (game.Opponent is null)
         {
             return new JoinGameResponse(game.Id, hostInfo, null, game.Board.ToStringArray(), game.NextTurn());
         }
-        
+
         var opponentUser = await userManager.FindByIdAsync(game.Opponent.UserId.ToString());
         var opponentInfo = new PlayerInfo(game.Opponent!.Id, opponentUser!.UserName!, 0, game.Opponent.Mark);
         return new JoinGameResponse(game.Id, hostInfo, opponentInfo, game.Board.ToStringArray(), game.NextTurn());

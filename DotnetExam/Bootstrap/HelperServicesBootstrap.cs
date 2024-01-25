@@ -11,5 +11,6 @@ public static class HelperServicesBootstrap
             .AddScoped<IDateTimeProvider, DateTimeProvider>()
             .AddScoped<AuthenticationService>()
             .AddScoped<IRandomService, RandomService>()
-            .AddScoped<IUserService, UserService>();
+            .AddScoped<IUserService, UserService>()
+            .AddScoped<IEventSenderService, EventSenderService>();
 }

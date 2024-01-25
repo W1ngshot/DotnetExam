@@ -4,11 +4,13 @@ using DotnetExam.Infrastructure.Exceptions;
 using DotnetExam.Infrastructure.Mediator.Command;
 using DotnetExam.Models.Enums;
 using DotnetExam.Models.Events;
+using DotnetExam.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotnetExam.Features.Game.Move;
 
-public class MoveCommandHandler(IExamDbContext dbContext) : ICommandHandler<MoveCommand, MoveResponse>
+public class MoveCommandHandler(IExamDbContext dbContext, IEventSenderService eventSenderService)
+    : ICommandHandler<MoveCommand, MoveResponse>
 {
     public async Task<MoveResponse> Handle(MoveCommand request, CancellationToken cancellationToken)
     {
@@ -30,25 +32,26 @@ public class MoveCommandHandler(IExamDbContext dbContext) : ICommandHandler<Move
         {
             throw new DomainException("Wrong place");
         }
-        
+
         game.Move(request.X, request.Y, player.Mark);
         dbContext.Games.Update(game);
         await dbContext.SaveEntitiesAsync();
-        
-        SendEvent(game, request.IdempotenceKey, player.Id);
-        
+
+        await SendEvent(game, request.IdempotenceKey, player.Id);
         return new MoveResponse(game.Id, game.Board.ToStringArray(), player.Id, request.IdempotenceKey);
     }
 
-    private void SendEvent(Models.Main.Game game, string idempotenceKey, Guid currentId)
+    private async Task SendEvent(Models.Main.Game game, string idempotenceKey, Guid currentId)
     {
         if (game.State == GameState.Started)
         {
-            var moveGameEvent = new PlayerMoveEvent(game.Id, idempotenceKey, game.Board.ToStringArray(),
-                currentId == game.Host.Id ? game.Opponent!.Id : game.Host.Id);
+            await eventSenderService.SendPlayerMoveEvent(
+                new PlayerMoveEvent(game.Id, idempotenceKey, game.Board.ToStringArray(),
+                    currentId == game.Host.Id ? game.Opponent!.Id : game.Host.Id));
             return;
         }
 
-        var gameOverEvent = new GameOverEvent(game.Id, game.Board.ToStringArray(), currentId, game.State);
+        await eventSenderService.SendGameOverEvent(
+            new GameOverEvent(game.Id, game.Board.ToStringArray(), currentId, game.State));
     }
 }
