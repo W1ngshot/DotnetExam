@@ -52,3 +52,11 @@ services:
       - db
       - mongodb
       - rabbitmq
+  
+  frontend:
+    container_name: frontend
+    build:
+      context: .
+      dockerfile: Frontend/Dockerfile
+    ports:
+      - ${FRONTEND_LOCAL_PORT}:${FRONTEND_DOCKER_PORT}
