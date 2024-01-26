@@ -22,15 +22,32 @@ public class JoinGameCommandHandler(
 {
     public async Task<JoinGameResponse> Handle(JoinGameCommand request, CancellationToken cancellationToken)
     {
-        if (await dbContext.Games.IsPlayingAsync(request.UserId, cancellationToken))
-        {
-            throw new BadRequestException("Already playing");
-        }
-
         var game = await dbContext.Games
             .Include(game => game.Host.User)
             .Include(game => game.Opponent!.User)
             .FirstOrNotFoundAsync(game => game.Id == request.GameId, cancellationToken);
+
+        if (game.Opponent is not null && game.Opponent.UserId == request.UserId || game.Host.Id == request.UserId)
+        {
+            var hostInformation = new PlayerInfo(game.Host.Id, game.Host.User.UserName!,
+                await ratingService.GetUserRatingAsync(game.Host.UserId), game.Host.Mark);
+            if (game.Opponent is null)
+            {
+                return new JoinGameResponse(game.Id, hostInformation, null, game.Board.ToStringArray(),
+                    GetNextTurnId(game), game.State);
+            }
+
+            var opponentInformation = new PlayerInfo(game.Opponent!.Id, game.Opponent.User.UserName!,
+                await ratingService.GetUserRatingAsync(game.Opponent.UserId), game.Opponent.Mark);
+            return new JoinGameResponse(game.Id, hostInformation, opponentInformation, game.Board.ToStringArray(),
+                GetNextTurnId(game),
+                game.State);
+        }
+        
+        if (await dbContext.Games.IsPlayingAsync(request.UserId, cancellationToken))
+        {
+            throw new BadRequestException("Already playing");
+        }
 
         if (request.JoinMode is JoinMode.AsViewer)
         {
