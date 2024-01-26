@@ -40,7 +40,8 @@ public class RestartGameCommandHandler(
             },
             Board = new Board(),
             State = GameState.Started,
-            CreatedAt = dateTimeProvider.UtcNow
+            CreatedAt = dateTimeProvider.UtcNow,
+            MaxRating = null
         };
 
         var opponentPlayer = new Player

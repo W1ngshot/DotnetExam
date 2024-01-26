@@ -6,12 +6,14 @@ namespace DotnetExam.Features.Game.CreateGame;
 
 public class CreateGameEndpoint : IEndpoint
 {
+    private record CreateGameDto(int? MaxRating);
+
     public void Map(IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapPost("/create", async (IMediator mediator, IUserService userService) =>
+        endpoints.MapPost("/create", async (CreateGameDto dto, IMediator mediator, IUserService userService) =>
                 Results.Ok(await mediator.Send(
                     new CreateGameCommand(
-                        userService.GetUserIdOrThrow()))))
+                        userService.GetUserIdOrThrow(), dto.MaxRating))))
             .RequireAuthorization();
     }
 }

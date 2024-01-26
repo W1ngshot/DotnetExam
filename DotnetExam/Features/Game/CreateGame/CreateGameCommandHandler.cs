@@ -33,7 +33,8 @@ public class CreateGameCommandHandler(
             },
             Board = new Board(),
             State = GameState.NotStarted,
-            CreatedAt = dateTimeProvider.UtcNow
+            CreatedAt = dateTimeProvider.UtcNow,
+            MaxRating = request.MaxRating
         };
 
         dbContext.Games.Add(game);

@@ -2,4 +2,4 @@
 
 namespace DotnetExam.Features.Game.CreateGame;
 
-public record CreateGameCommand(Guid UserId) : ICommand<CreateGameResponse>;
+public record CreateGameCommand(Guid UserId, int? MaxRating) : ICommand<CreateGameResponse>;

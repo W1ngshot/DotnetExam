@@ -7,6 +7,7 @@ public record GameResponse(
     Guid GameId,
     DateTimeOffset CreatedAt,
     GameState State,
+    int? MaxRating,
     PlayerInfo Host,
     PlayerInfo? Opponent);
 

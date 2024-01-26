@@ -3,6 +3,7 @@ using System;
 using DotnetExam.Database.Postgres;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DotnetExam.Migrations
 {
     [DbContext(typeof(ExamDbContext))]
-    partial class ExamDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240126143144_Initial3")]
+    partial class Initial3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -107,8 +110,8 @@ namespace DotnetExam.Migrations
                     b.Property<Guid>("HostId")
                         .HasColumnType("uuid");
 
-                    b.Property<int?>("MaxRating")
-                        .HasColumnType("integer");
+                    b.Property<long>("MaxRating")
+                        .HasColumnType("bigint");
 
                     b.Property<Guid?>("OpponentId")
                         .HasColumnType("uuid");

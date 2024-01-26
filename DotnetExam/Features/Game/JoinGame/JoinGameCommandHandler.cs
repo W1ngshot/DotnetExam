@@ -37,6 +37,11 @@ public class JoinGameCommandHandler(
             return await JoinAsViewer(game);
         }
 
+        if (await ratingService.GetUserRatingAsync(request.UserId) > game.MaxRating)
+        {
+            throw new DomainException("Wrong rating");
+        }
+
         if (game.State is not GameState.NotStarted || game.Opponent is not null)
         {
             throw new DomainException("Already started");

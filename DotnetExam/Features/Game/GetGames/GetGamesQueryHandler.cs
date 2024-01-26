@@ -17,7 +17,7 @@ public class GetGamesQueryHandler(IExamDbContext dbContext) : IQueryHandler<GetG
                 .ThenByDescending(game => game.CreatedAt)
                 .Skip(request.Skip)
                 .Take(request.Count)
-                .Select(game => new GameResponse(game.Id, game.CreatedAt, game.State,
+                .Select(game => new GameResponse(game.Id, game.CreatedAt, game.State, game.MaxRating,
                     new PlayerInfo(game.Host.UserId, game.Host.User.UserName!, 0, game.Host.Mark),
                     game.Opponent == null
                         ? null

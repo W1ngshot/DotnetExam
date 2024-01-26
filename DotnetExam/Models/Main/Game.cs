@@ -8,6 +8,7 @@ public class Game : BaseEntity
     public required Player Host { get; set; }
     public Guid? OpponentId { get; set; }
     public Player? Opponent { get; set; }
+    public int? MaxRating { get; set; }
     public required GameState State { get; set; }
     public required DateTimeOffset CreatedAt { get; set; }
     public required Board Board { get; set; }
