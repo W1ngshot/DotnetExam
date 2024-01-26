@@ -15,5 +15,6 @@ public class LoginEndpoint : IEndpoint
                     dto.Login,
                     dto.Password))))
             .AddValidation(builder => builder.AddFor<LoginDto>());
+        
     }
 }

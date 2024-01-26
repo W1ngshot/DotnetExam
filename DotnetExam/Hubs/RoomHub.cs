@@ -17,6 +17,6 @@ public class RoomHub(IUserService userService, IMediator mediator) : Hub<IRoom>
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         var userId = userService.GetUserIdOrThrow();
-        await mediator.Send(new DisconnectCommand(userId));
+        // await mediator.Send(new DisconnectCommand(userId));
     }
 }

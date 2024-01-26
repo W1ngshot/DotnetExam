@@ -6,8 +6,9 @@ public static class CorsBootstrap
     {
         return app.UseCors(x =>
         {
-            x.AllowAnyOrigin()
+            x.WithOrigins("http://localhost:5173", "http://localhost:3000 ")
                 .AllowAnyHeader()
+                .AllowCredentials()
                 .AllowAnyMethod();
         });
     }

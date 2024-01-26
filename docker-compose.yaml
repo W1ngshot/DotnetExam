@@ -1,9 +1,8 @@
 services:
-  
   db:
     container_name: db
     hostname: db
-    image: postgres
+    image: postgres:alpine
     ports:
       - ${POSTGRES_LOCAL_PORT}:${POSTGRES_PORT}
     restart: always
@@ -56,7 +55,7 @@ services:
   frontend:
     container_name: frontend
     build:
-      context: .
-      dockerfile: Frontend/Dockerfile
+      context: ./Frontend/tick-tack-frontend
+      dockerfile: Dockerfile
     ports:
       - ${FRONTEND_LOCAL_PORT}:${FRONTEND_DOCKER_PORT}
