@@ -32,7 +32,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCorsConfiguration(builder.Configuration);
+app.UseCorsConfiguration();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();

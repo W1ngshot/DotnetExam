@@ -2,7 +2,7 @@
 
 public static class CorsBootstrap
 {
-    public static IApplicationBuilder UseCorsConfiguration(this IApplicationBuilder app, IConfiguration configuration)
+    public static IApplicationBuilder UseCorsConfiguration(this IApplicationBuilder app)
     {
         return app.UseCors(x =>
         {

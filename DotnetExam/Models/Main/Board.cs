@@ -61,16 +61,11 @@ public class Board : IEnumerable<Cell>
 
     public bool IsInBound(int x, int y) => x >= 0 && x < Size && y >= 0 && y < Size;
 
-    public Mark? GetMark(int x, int y) => Cells[x, y].Mark;
+    public Mark? GetMark(int x, int y) => Cells[y, x].Mark;
 
     public void SetMark(int x, int y, Mark? mark)
     {
-        Cells[x, y].Mark = mark;
-    }
-
-    public override string ToString()
-    {
-        return base.ToString();
+        Cells[y, x].Mark = mark;
     }
 
     public string[] ToStringArray()
@@ -80,7 +75,7 @@ public class Board : IEnumerable<Cell>
         {
             for (var y = 0; y < Size; y++)
             {
-                switch (Cells[x, y].Mark)
+                switch (GetMark(y, x))
                 {
                     case Mark.Cross:
                         list.Add("X");
