@@ -1,5 +1,6 @@
 ﻿using DotnetExam.Features.Game.CreateGame;
 using DotnetExam.Features.Game.GetGames;
+using DotnetExam.Features.Game.GetRatingTop;
 using DotnetExam.Features.Game.JoinGame;
 using DotnetExam.Features.Game.Move;
 using DotnetExam.Features.Game.RestartGame;
@@ -19,6 +20,7 @@ public class GameEndpointRoot : IEndpointRoot
             .AddEndpoint<GetGamesEndpoint>()
             .AddEndpoint<RestartGameEndpoint>()
             .AddEndpoint<MoveEndpoint>()
-            .AddEndpoint<SendMessageEndpoint>();
+            .AddEndpoint<SendMessageEndpoint>()
+            .AddEndpoint<GetRatingTopEndpoint>();
     }
 }

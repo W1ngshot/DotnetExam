@@ -6,6 +6,7 @@ using DotnetExam.Models;
 using DotnetExam.Models.Enums;
 using DotnetExam.Models.Events;
 using DotnetExam.Models.Main;
+using DotnetExam.Services;
 using DotnetExam.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
@@ -15,7 +16,7 @@ public class RestartGameCommandHandler(
     IExamDbContext dbContext,
     IDateTimeProvider dateTimeProvider,
     IRandomService randomService,
-    UserManager<AppUser> userManager,
+    RatingService ratingService,
     IEventSenderService eventSenderService)
     : ICommandHandler<RestartGameCommand, RestartGameResponse>
 {
@@ -53,11 +54,12 @@ public class RestartGameCommandHandler(
         dbContext.Games.Add(game);
         await dbContext.SaveEntitiesAsync();
 
-        var hostUser = await userManager.FindByIdAsync(game.Host.UserId.ToString());
-        var opponentUser = await userManager.FindByIdAsync(opponentPlayer.UserId.ToString());
+        var hostUser = await ratingService.GetUserInfoAsync(game.Host.UserId);
+        var opponentUser = await ratingService.GetUserInfoAsync(game.Opponent!.UserId);
 
-        var hostInfo = new PlayerInfo(game.Host.Id, hostUser!.UserName!, 0, game.Host.Mark);
-        var opponentInfo = new PlayerInfo(game.Opponent!.Id, opponentUser!.UserName!, 0, game.Opponent.Mark);
+        var hostInfo = new PlayerInfo(game.Host.Id, hostUser.Username, hostUser.Rating, game.Host.Mark);
+        var opponentInfo = new PlayerInfo(game.Opponent!.Id, opponentUser.Username, opponentUser.Rating,
+            game.Opponent.Mark);
 
         await eventSenderService.SendGameRestartEvent(
             new GameRestartEvent(request.OldGameId, game.Id, hostInfo, opponentInfo));

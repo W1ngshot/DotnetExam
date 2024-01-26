@@ -9,7 +9,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DotnetExam.Features.Game.Move;
 
-public class MoveCommandHandler(IExamDbContext dbContext, IEventSenderService eventSenderService)
+public class MoveCommandHandler(
+    IExamDbContext dbContext,
+    IEventSenderService eventSenderService,
+    IRatingChangeService ratingChangeService)
     : ICommandHandler<MoveCommand, MoveResponse>
 {
     public async Task<MoveResponse> Handle(MoveCommand request, CancellationToken cancellationToken)
@@ -51,7 +54,16 @@ public class MoveCommandHandler(IExamDbContext dbContext, IEventSenderService ev
             return;
         }
 
+        if (game.State != GameState.Draw)
+        {
+            await ratingChangeService.SendRatingChange(
+                game.Host.Id == currentId ? game.Host.UserId : game.Opponent!.UserId,
+                game.Host.Id == currentId ? game.Opponent!.UserId : game.Host.UserId);
+        }
+
         await eventSenderService.SendGameOverEvent(
-            new GameOverEvent(game.Id, game.Board.ToStringArray(), currentId, game.State));
+            new GameOverEvent(game.Id, game.Board.ToStringArray(),
+                game.State == GameState.Draw ? null : currentId,
+                game.State));
     }
 }

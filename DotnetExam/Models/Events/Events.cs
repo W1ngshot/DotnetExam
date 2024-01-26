@@ -8,6 +8,6 @@ public record PlayerMoveEvent(Guid GameId, string IdempotenceKey, string[] Board
 
 public record GameOverEvent(Guid GameId, string[] Board, Guid? WinnerId, GameState State);
 
-public record SendMessageEvent(Guid GameId, string IdempotenceKey, string Message, ChatUser Sender);
+public record SendMessageEvent(Guid GameId, string IdempotenceKey, string Message, UserInfo Sender);
 
 public record GameRestartEvent(Guid OldGameId, Guid GameId, PlayerInfo Host, PlayerInfo Opponent);

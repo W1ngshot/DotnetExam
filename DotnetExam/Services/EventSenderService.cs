@@ -24,7 +24,7 @@ public class EventSenderService(IHubContext<RoomHub, IRoom> hubContext) : IEvent
 
     public async Task SendGameRestartEvent(GameRestartEvent @event)
     {
-        await hubContext.Clients.Group(@event.GameId.ToString()).GameRestart(@event);
+        await hubContext.Clients.Group(@event.OldGameId.ToString()).GameRestart(@event);
     }
 
     public async Task SendMessageEvent(SendMessageEvent @event)

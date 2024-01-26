@@ -8,7 +8,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DotnetExam.Features.Game.Disconnect;
 
-public class DisconnectCommandHandler(IExamDbContext dbContext, IEventSenderService eventSenderService)
+public class DisconnectCommandHandler(
+    IExamDbContext dbContext,
+    IEventSenderService eventSenderService,
+    IRatingChangeService ratingChangeService)
     : ICommandHandler<DisconnectCommand, SuccessResponse>
 {
     public async Task<SuccessResponse> Handle(DisconnectCommand request, CancellationToken cancellationToken)
@@ -27,6 +30,7 @@ public class DisconnectCommandHandler(IExamDbContext dbContext, IEventSenderServ
 
         if (game.State is not GameState.Started)
         {
+            //TODO удалять игры в случае лива хоста
             game.State = GameState.Draw;
             await dbContext.SaveEntitiesAsync();
             await eventSenderService.SendGameOverEvent(CreateGameOverEvent(game, null));
@@ -37,6 +41,9 @@ public class DisconnectCommandHandler(IExamDbContext dbContext, IEventSenderServ
         game.State = winner!.Mark is Mark.Cross ? GameState.CrossesWon : GameState.NoughtsWon;
         await dbContext.SaveEntitiesAsync();
 
+        await ratingChangeService.SendRatingChange(winner.UserId,
+            game.Host.UserId == winner.UserId ? game.Opponent!.UserId : game.Host.UserId);
+        
         await eventSenderService.SendGameOverEvent(CreateGameOverEvent(game, winner.Id));
         return new SuccessResponse();
     }

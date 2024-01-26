@@ -11,7 +11,8 @@ namespace DotnetExam.Features.Auth.Register;
 public class RegisterCommandHandler(
     UserManager<AppUser> userManager,
     AuthenticationService authService,
-    IExamDbContext dbContext)
+    IExamDbContext dbContext,
+    RatingService ratingService)
     : ICommandHandler<RegisterCommand, AuthorizationResponse>
 {
     public async Task<AuthorizationResponse> Handle(RegisterCommand command, CancellationToken cancellationToken)
@@ -27,6 +28,7 @@ public class RegisterCommandHandler(
 
         var tokens = await authService.AuthenticateUser(identityUser);
         await dbContext.SaveEntitiesAsync();
+        await ratingService.CreateUserRatingAsync(identityUser.Id, identityUser.UserName);
         return AuthorizationResponse.FromAuthenticationResult(tokens);
     }
 }

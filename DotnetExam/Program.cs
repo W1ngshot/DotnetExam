@@ -6,7 +6,6 @@ using DotnetExam.Middleware;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 
-
 builder.Services
     .AddDatabaseWithIdentity(builder.Configuration)
     .AddEndpointsApiExplorer()
@@ -15,9 +14,10 @@ builder.Services
     .AddAuthorization();
 
 builder.Services
-    .AddHelperServices()
+    .AddHelperServices(builder.Configuration)
     .AddFluentValidation()
     .AddMediatrConfiguration()
+    .AddMassTransitRabbit(builder.Configuration)
     .AddCors()
     .AddSignalR();
 

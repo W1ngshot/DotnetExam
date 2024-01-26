@@ -6,6 +6,7 @@ using DotnetExam.Models;
 using DotnetExam.Models.Enums;
 using DotnetExam.Models.Events;
 using DotnetExam.Models.Main;
+using DotnetExam.Services;
 using DotnetExam.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,8 @@ namespace DotnetExam.Features.Game.JoinGame;
 public class JoinGameCommandHandler(
     IExamDbContext dbContext,
     UserManager<AppUser> userManager,
-    IEventSenderService eventSenderService)
+    IEventSenderService eventSenderService,
+    RatingService ratingService)
     : ICommandHandler<JoinGameCommand, JoinGameResponse>
 {
     public async Task<JoinGameResponse> Handle(JoinGameCommand request, CancellationToken cancellationToken)
@@ -54,8 +56,10 @@ public class JoinGameCommandHandler(
 
         var opponentUser = await userManager.FindByIdAsync(opponent.UserId.ToString());
 
-        var hostInfo = new PlayerInfo(game.Host.Id, game.Host.User.UserName!, 0, game.Host.Mark);
-        var opponentInfo = new PlayerInfo(game.Opponent!.Id, opponentUser!.UserName!, 0, game.Opponent.Mark);
+        var hostInfo = new PlayerInfo(game.Host.Id, game.Host.User.UserName!,
+            await ratingService.GetUserRatingAsync(game.Host.UserId), game.Host.Mark);
+        var opponentInfo = new PlayerInfo(game.Opponent!.Id, opponentUser!.UserName!,
+            await ratingService.GetUserRatingAsync(game.Opponent.UserId), game.Opponent.Mark);
         await eventSenderService.SendGameStartEvent(new GameStartEvent(game.Id, hostInfo, opponentInfo));
 
         return new JoinGameResponse(game.Id, hostInfo, opponentInfo, game.Board.ToStringArray(), game.NextTurn());
@@ -63,7 +67,8 @@ public class JoinGameCommandHandler(
 
     private async Task<JoinGameResponse> JoinAsViewer(Models.Main.Game game)
     {
-        var hostInfo = new PlayerInfo(game.Host.Id, game.Host.User.UserName!, 0, game.Host.Mark);
+        var hostInfo = new PlayerInfo(game.Host.Id, game.Host.User.UserName!,
+            await ratingService.GetUserRatingAsync(game.Host.UserId), game.Host.Mark);
 
         if (game.Opponent is null)
         {
@@ -71,7 +76,8 @@ public class JoinGameCommandHandler(
         }
 
         var opponentUser = await userManager.FindByIdAsync(game.Opponent.UserId.ToString());
-        var opponentInfo = new PlayerInfo(game.Opponent!.Id, opponentUser!.UserName!, 0, game.Opponent.Mark);
+        var opponentInfo = new PlayerInfo(game.Opponent!.Id, opponentUser!.UserName!,
+            await ratingService.GetUserRatingAsync(game.Opponent.UserId), game.Opponent.Mark);
         return new JoinGameResponse(game.Id, hostInfo, opponentInfo, game.Board.ToStringArray(), game.NextTurn());
     }
 }
