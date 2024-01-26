@@ -34,7 +34,7 @@ public class JoinGameCommandHandler(
             if (game.Opponent is null)
             {
                 return new JoinGameResponse(game.Id, hostInformation, null, game.Board.ToStringArray(),
-                    GetNextTurnId(game), game.State);
+                    null, game.State);
             }
 
             var opponentInformation = new PlayerInfo(game.Opponent!.Id, game.Opponent.User.UserName!,
