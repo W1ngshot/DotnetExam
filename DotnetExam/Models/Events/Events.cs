@@ -2,7 +2,13 @@
 
 namespace DotnetExam.Models.Events;
 
-public record GameStartEvent(Guid GameId, PlayerInfo Host, PlayerInfo Opponent);
+public record GameStartEvent(
+    Guid GameId,
+    PlayerInfo Host,
+    PlayerInfo Opponent,
+    string[] Board,
+    Guid CurrentTurnId,
+    GameState State);
 
 public record PlayerMoveEvent(Guid GameId, string IdempotenceKey, string[] Board, Guid CurrentTurnId);
 

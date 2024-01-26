@@ -8,4 +8,5 @@ public record JoinGameResponse(
     PlayerInfo Host,
     PlayerInfo? Opponent,
     string[] Board,
-    Mark CurrentTurn); 
+    Guid CurrentTurnId,
+    GameState State); 

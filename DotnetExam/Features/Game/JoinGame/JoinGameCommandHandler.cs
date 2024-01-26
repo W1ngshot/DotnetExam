@@ -65,9 +65,13 @@ public class JoinGameCommandHandler(
             await ratingService.GetUserRatingAsync(game.Host.UserId), game.Host.Mark);
         var opponentInfo = new PlayerInfo(game.Opponent!.Id, opponentUser!.UserName!,
             await ratingService.GetUserRatingAsync(game.Opponent.UserId), game.Opponent.Mark);
-        await eventSenderService.SendGameStartEvent(new GameStartEvent(game.Id, hostInfo, opponentInfo));
 
-        return new JoinGameResponse(game.Id, hostInfo, opponentInfo, game.Board.ToStringArray(), game.NextTurn());
+        await eventSenderService.SendGameStartEvent(
+            new GameStartEvent(game.Id, hostInfo, opponentInfo, game.Board.ToStringArray(), GetNextTurnId(game),
+                game.State));
+
+        return new JoinGameResponse(game.Id, hostInfo, opponentInfo, game.Board.ToStringArray(), GetNextTurnId(game),
+            game.State);
     }
 
     private async Task<JoinGameResponse> JoinAsViewer(Models.Main.Game game)
@@ -77,12 +81,17 @@ public class JoinGameCommandHandler(
 
         if (game.Opponent is null)
         {
-            return new JoinGameResponse(game.Id, hostInfo, null, game.Board.ToStringArray(), game.NextTurn());
+            return new JoinGameResponse(game.Id, hostInfo, null, game.Board.ToStringArray(), GetNextTurnId(game),
+                game.State);
         }
 
         var opponentUser = await userManager.FindByIdAsync(game.Opponent.UserId.ToString());
         var opponentInfo = new PlayerInfo(game.Opponent!.Id, opponentUser!.UserName!,
             await ratingService.GetUserRatingAsync(game.Opponent.UserId), game.Opponent.Mark);
-        return new JoinGameResponse(game.Id, hostInfo, opponentInfo, game.Board.ToStringArray(), game.NextTurn());
+        return new JoinGameResponse(game.Id, hostInfo, opponentInfo, game.Board.ToStringArray(), GetNextTurnId(game),
+            game.State);
     }
+
+    private Guid GetNextTurnId(Models.Main.Game game) =>
+        game.Host.Mark == game.NextTurn() ? game.Host.Id : game.Opponent!.Id;
 }
