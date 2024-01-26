@@ -8,7 +8,6 @@ using DotnetExam.Models.Events;
 using DotnetExam.Models.Main;
 using DotnetExam.Services;
 using DotnetExam.Services.Interfaces;
-using Microsoft.AspNetCore.Identity;
 
 namespace DotnetExam.Features.Game.RestartGame;
 
@@ -28,7 +27,7 @@ public class RestartGameCommandHandler(
         if (await dbContext.Games.IsPlayingAsync(request.HostId, cancellationToken)
             || await dbContext.Games.IsPlayingAsync(opponent.UserId, cancellationToken))
         {
-            throw new DomainException("Already playing");
+            throw new BadRequestException("Already playing");
         }
 
         var game = new Models.Main.Game

@@ -28,12 +28,12 @@ public class MoveCommandHandler(
 
         if (!game.IsPlayerTurn(player.Mark))
         {
-            throw new DomainException("Wrong turn");
+            throw new BadRequestException("Wrong turn");
         }
 
         if (!game.Board.IsInBound(request.X, request.Y) || game.Board.GetMark(request.X, request.Y) is not null)
         {
-            throw new DomainException("Wrong place");
+            throw new BadRequestException("Wrong place");
         }
 
         game.Move(request.X, request.Y, player.Mark);

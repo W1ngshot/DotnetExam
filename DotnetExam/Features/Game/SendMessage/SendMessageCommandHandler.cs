@@ -1,11 +1,8 @@
-﻿using DotnetExam.Infrastructure.Exceptions;
-using DotnetExam.Infrastructure.Mediator.Command;
+﻿using DotnetExam.Infrastructure.Mediator.Command;
 using DotnetExam.Models;
 using DotnetExam.Models.Events;
-using DotnetExam.Models.Main;
 using DotnetExam.Services;
 using DotnetExam.Services.Interfaces;
-using Microsoft.AspNetCore.Identity;
 
 namespace DotnetExam.Features.Game.SendMessage;
 

@@ -7,7 +7,7 @@ public class GetProfileQueryHandler(RatingService ratingService) : IQueryHandler
 {
     public async Task<GetProfileResponse> Handle(GetProfileQuery request, CancellationToken cancellationToken)
     {
-        var ratingModel =await ratingService.GetUserInfoAsync(request.UserId);
+        var ratingModel = await ratingService.GetUserInfoAsync(request.UserId);
         return new GetProfileResponse(ratingModel.UserId, ratingModel.Username, ratingModel.Rating);
     }
 }

@@ -30,10 +30,7 @@ public class DisconnectCommandHandler(
 
         if (game.State is not GameState.Started)
         {
-            //TODO удалять игры в случае лива хоста
-            game.State = GameState.Draw;
-            await dbContext.SaveEntitiesAsync();
-            await eventSenderService.SendGameOverEvent(CreateGameOverEvent(game, null));
+            await DeleteGameAsync(game);
             return new SuccessResponse();
         }
 
@@ -51,5 +48,17 @@ public class DisconnectCommandHandler(
     private static GameOverEvent CreateGameOverEvent(Models.Main.Game game, Guid? winnerId)
     {
         return new GameOverEvent(game.Id, game.Board.ToStringArray(), winnerId, game.State);
+    }
+
+    private async Task DeleteGameAsync(Models.Main.Game game)
+    {
+        var gameId = game.Id;
+        var player = game.Host;
+            
+        dbContext.Games.Remove(game);
+        dbContext.Players.Remove(player);
+            
+        await dbContext.SaveEntitiesAsync();
+        await eventSenderService.SendGameClosedEvent(new GameClosedEvent(gameId));
     }
 }

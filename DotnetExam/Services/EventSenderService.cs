@@ -31,4 +31,9 @@ public class EventSenderService(IHubContext<RoomHub, IRoom> hubContext) : IEvent
     {
         await hubContext.Clients.Group(@event.GameId.ToString()).SendMessage(@event);
     }
+
+    public async Task SendGameClosedEvent(GameClosedEvent @event)
+    {
+        await hubContext.Clients.Group(@event.GameId.ToString()).GameClosed(@event);
+    }
 }

@@ -21,7 +21,7 @@ public class CreateGameCommandHandler(
     {
         if (await dbContext.Games.IsPlayingAsync(request.UserId, cancellationToken))
         {
-            throw new DomainException("Already playing");
+            throw new BadRequestException("Already playing");
         }
 
         var game = new Models.Main.Game

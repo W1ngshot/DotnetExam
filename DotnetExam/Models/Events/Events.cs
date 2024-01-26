@@ -11,3 +11,5 @@ public record GameOverEvent(Guid GameId, string[] Board, Guid? WinnerId, GameSta
 public record SendMessageEvent(Guid GameId, string IdempotenceKey, string Message, UserInfo Sender);
 
 public record GameRestartEvent(Guid OldGameId, Guid GameId, PlayerInfo Host, PlayerInfo Opponent);
+
+public record GameClosedEvent(Guid GameId);

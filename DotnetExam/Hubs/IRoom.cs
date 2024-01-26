@@ -9,4 +9,5 @@ public interface IRoom
     Task GameOver(GameOverEvent @event);
     Task GameRestart(GameRestartEvent @event);
     Task SendMessage(SendMessageEvent @event);
+    Task GameClosed(GameClosedEvent @event);
 }

@@ -24,7 +24,7 @@ public class JoinGameCommandHandler(
     {
         if (await dbContext.Games.IsPlayingAsync(request.UserId, cancellationToken))
         {
-            throw new DomainException("Already playing");
+            throw new BadRequestException("Already playing");
         }
 
         var game = await dbContext.Games
@@ -39,12 +39,12 @@ public class JoinGameCommandHandler(
 
         if (await ratingService.GetUserRatingAsync(request.UserId) > game.MaxRating)
         {
-            throw new DomainException("Wrong rating");
+            throw new BadRequestException("Wrong rating");
         }
 
         if (game.State is not GameState.NotStarted || game.Opponent is not null)
         {
-            throw new DomainException("Already started");
+            throw new BadRequestException("Already started");
         }
 
         var opponent = new Player

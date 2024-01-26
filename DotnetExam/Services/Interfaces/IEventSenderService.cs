@@ -9,4 +9,5 @@ public interface IEventSenderService
     public Task SendGameOverEvent(GameOverEvent @event);
     public Task SendGameRestartEvent(GameRestartEvent @event);
     public Task SendMessageEvent(SendMessageEvent @event);
+    public Task SendGameClosedEvent(GameClosedEvent @event);
 }
