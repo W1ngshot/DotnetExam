@@ -40,8 +40,8 @@ public class MoveCommandHandler(
         dbContext.Games.Update(game);
         await dbContext.SaveEntitiesAsync();
 
-        await SendEvent(game, request.IdempotenceKey, player.Id);
-        return new MoveResponse(game.Id, game.Board.ToStringArray(), player.Id, request.IdempotenceKey);
+        await SendEvent(game, request.IdempotenceKey, player.UserId);
+        return new MoveResponse(game.Id, game.Board.ToStringArray(), player.UserId, request.IdempotenceKey);
     }
 
     private async Task SendEvent(Models.Main.Game game, string idempotenceKey, Guid currentId)
@@ -50,7 +50,7 @@ public class MoveCommandHandler(
         {
             await eventSenderService.SendPlayerMoveEvent(
                 new PlayerMoveEvent(game.Id, idempotenceKey, game.Board.ToStringArray(),
-                    currentId == game.Host.Id ? game.Opponent!.Id : game.Host.Id));
+                    currentId == game.Host.UserId ? game.Opponent!.UserId : game.Host.UserId));
             return;
         }
 

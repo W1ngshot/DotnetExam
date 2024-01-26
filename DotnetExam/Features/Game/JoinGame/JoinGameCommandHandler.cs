@@ -110,5 +110,5 @@ public class JoinGameCommandHandler(
     }
 
     private Guid GetNextTurnId(Models.Main.Game game) =>
-        game.Host.Mark == game.NextTurn() ? game.Host.Id : game.Opponent!.Id;
+        game.Host.Mark == game.NextTurn() ? game.Host.UserId : game.Opponent!.UserId;
 }
