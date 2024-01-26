@@ -13,6 +13,6 @@ public class RatingChangeConsumer(RatingService ratingService) : IConsumer<Ratin
 
     private async Task ChangeRating(Guid userId, int ratingChange)
     {
-        await ratingService.AddRating(userId, ratingChange);
+        await ratingService.AddRatingAsync(userId, ratingChange);
     }
 }
