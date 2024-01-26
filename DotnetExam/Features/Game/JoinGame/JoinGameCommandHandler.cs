@@ -27,7 +27,7 @@ public class JoinGameCommandHandler(
             .Include(game => game.Opponent!.User)
             .FirstOrNotFoundAsync(game => game.Id == request.GameId, cancellationToken);
 
-        if (game.Opponent is not null && game.Opponent.UserId == request.UserId || game.Host.Id == request.UserId)
+        if (game.Opponent is not null && game.Opponent.UserId == request.UserId || game.Host.UserId == request.UserId)
         {
             var hostInformation = new PlayerInfo(game.Host.Id, game.Host.User.UserName!,
                 await ratingService.GetUserRatingAsync(game.Host.UserId), game.Host.Mark);
