@@ -42,6 +42,6 @@ public class CreateGameCommandHandler(
 
         var host = await ratingService.GetUserInfoAsync(request.UserId);
         return new CreateGameResponse(game.Id,
-            new PlayerInfo(game.Host.Id, host.Username, host.Rating, game.Host.Mark));
+            new PlayerInfo(game.Host.UserId, host.Username, host.Rating, game.Host.Mark));
     }
 }

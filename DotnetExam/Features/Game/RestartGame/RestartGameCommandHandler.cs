@@ -57,8 +57,8 @@ public class RestartGameCommandHandler(
         var hostUser = await ratingService.GetUserInfoAsync(game.Host.UserId);
         var opponentUser = await ratingService.GetUserInfoAsync(game.Opponent!.UserId);
 
-        var hostInfo = new PlayerInfo(game.Host.Id, hostUser.Username, hostUser.Rating, game.Host.Mark);
-        var opponentInfo = new PlayerInfo(game.Opponent!.Id, opponentUser.Username, opponentUser.Rating,
+        var hostInfo = new PlayerInfo(game.Host.UserId, hostUser.Username, hostUser.Rating, game.Host.Mark);
+        var opponentInfo = new PlayerInfo(game.Opponent!.UserId, opponentUser.Username, opponentUser.Rating,
             game.Opponent.Mark);
 
         await eventSenderService.SendGameRestartEvent(

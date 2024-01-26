@@ -33,7 +33,7 @@ public class GetGamesQueryHandler(IExamDbContext dbContext, RatingService rating
                     infos.First(x => x.UserId == game.Host.UserId).Rating, game.Host.Mark),
                 game.Opponent == null
                     ? null
-                    : new PlayerInfo(game.Opponent.Id, game.Opponent.User.UserName!,
+                    : new PlayerInfo(game.Opponent.UserId, game.Opponent.User.UserName!,
                         infos.First(x => x.UserId == game.Opponent.UserId).Rating, game.Opponent.Mark)))
             .ToList());
     }
