@@ -41,11 +41,11 @@ services:
       dockerfile: DotnetExam/Dockerfile
     environment:
       ConnectionStrings__Postgres: Host=db;Port=${POSTGRES_PORT};Username=${POSTGRES_USERNAME};Password=${POSTGRES_PASSWORD};Database=${POSTGRES_DB}
-      ConnectionStrings__MongoDb: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@mongodb:${MONGODB_PORT}
+      ConnectionStrings__RabbitMQ: amqp://${RABBITMQ_USERNAME}:${RABBITMQ_PASSWORD}@rabbitmq:${RABBITMQ_PORT}/
       Frontend__Url: ${FRONTEND_URL}
-      RabbitConfig__Host: rabbitmq
-      RabbitConfig__Username: rabbit
-      RabbitConfig__Password: 123456
+      MongoConfig__ConnectionString: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@mongodb:${MONGODB_PORT}
+      MongoConfig__DatabaseName: ${MONGODB_DATABASE}
+      MongoConfig__CollectionName: ${MONGODB_COLLECTION}
     ports:
       - ${API_HTTP_PORT}:8080
     depends_on:
